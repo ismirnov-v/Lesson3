@@ -1,0 +1,22 @@
+# Visual Studio Code related
+.classpath
+.project
+.settings/
+.vscode/
+
+#
+__pycache__/
+**/__pycache__/
+*.txt
+
+#Логи
+*.log
+
+
+#Виртуальное окружение питона
+venv
+.venv
+pyenv
+env
+.env
+
