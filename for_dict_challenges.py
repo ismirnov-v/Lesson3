@@ -150,15 +150,12 @@ for student in school:
             gender_stats.append({'class': student["class"], 'female': female, 'male': male})
 
 #Заполняем два словаря  количеством преобладающего пола учашихся в классе. Для каждого пола свой словарь.            
-print(gender_stats)
 for gender in gender_stats:
     if gender['female'] > gender['male']:
-        print(gender['female'])
         female_dict[gender['class']] = gender.get('female')
     else:
         male_dict[gender['class']] = gender.get('male')
-print(female_dict) 
-print(male_dict) 
+ 
 
 
 # Выводим информацию
