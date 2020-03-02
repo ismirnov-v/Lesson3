@@ -5,6 +5,7 @@
 .vscode/
 
 #
+sec.py
 __pycache__/
 **/__pycache__/
 *.txt
