@@ -42,13 +42,12 @@ def check_constellation(bot, update):
 def word_count(bot, update):
     """ Функция подсчитывающая количество слов в фразе полученой после комманды """
     try:
-        symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9','№', ',', '.', '/', '<', '>', '\\', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+', '=', '-', '~', '`', ':', ';']
+        symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9','№', ',', '.', '/', '<', '>', '\\', 
+        '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+', '=', '-', '~', '`', ':', ';']
         
         user_request = update.message.text.split(' ')
-        user_text = user_request
-        logging.info(f'На вход пришло: {user_request}::type_{type(user_request)}. type-text:{type(update.message.text)}')
-        if len(user_text) == 1:
-            return f'После команды "/wordcount" Вы не написали ни одного слова. \n{user_text}, \n {len(user_text)}'
+        if len(user_request) == 1:
+            return f'После команды "/wordcount" Вы не написали ни одного слова. \n{user_request}, \n {len(user_request)}'
         user_text = user_request[1:]
         
         def del_empty_item_list(user_list):
@@ -60,7 +59,6 @@ def word_count(bot, update):
                 some_text = some_text.replace(symbol, ' ')
             return some_text        
 
-
         def convert_text(user_text):
             """ Функция принимает а вход список для конвертирования в другой список для подсчета слов """
             
@@ -68,21 +66,38 @@ def word_count(bot, update):
             user_text_str = del_symbols(user_text_str)
             user_text = user_text_str.split(' ')
             user_text = del_empty_item_list(user_text)
-            
-            logging.info(f'После преборазвания функцией del_empty_list_item: {type(user_text), user_text}')
-
             if len(user_text) == 0:
                 return f'В указаном тексте нет слов.'
             else:
-                return f'Кол-во слов в веденном элементе: {len(user_text)} шт.\nВ подсчет попали следующие элементы: \n%s ' % "\n".join(user_text)
-
+                return f'Кол-во слов в веденном элементе: {len(user_text)} шт.\nВ подсчет попали следующие слова: \n%s ' % "\n".join(user_text)
 
         response_result = convert_text(user_text)
         update.message.reply_text(response_result)
+
     except AttributeError:
         return f'В сообщении нет слов.'
 
-    
+def full_moon(bot, update):
+    """Функция возвращает дату ближайщего полнолуния относительно даты в формате YYYY-MM-DD, введеной пользователем."""
+    def full_moon_getdate(user_date):
+        """По полученой на вход дате получаем дату полнолуния"""
+        try:
+            full_moon_date = ephem.next_full_moon(user_date)
+            return full_moon_date
+        except AttributeError:
+            return f'Пока не уверен в данном исключении.'
+                
+
+    try:
+        user_request = update.message.text.split(" ")
+        user_date = datetime.strptime(user_request[1], '%Y-%m-%d') 
+        logging.info(f'На вход пришло: {user_request}. После преобразования получили: "{user_date}::{type(user_date)}"')
+        response_result = f'Для "{user_date.strftime("%Y-%m-%d")}", ближайщая дата полнолуния: {full_moon_getdate(user_date)}'
+        update.message.reply_text(response_result)
+    except ValueError:
+        update.message.reply_text(f'Дату нужно вводить в формате: YYYY-MM-DD.')
+
+
 def talk_to_me(bot, update):
     """ Простая функция для эхо ответа и записи информации в лог."""
     #Эхоответ:
@@ -108,6 +123,7 @@ def main():
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("planet", check_constellation))
     dp.add_handler(CommandHandler("wordcount", word_count))
+    dp.add_handler(CommandHandler("next_full_moon", full_moon))
 
     #Отслеживаем сообщения, и делаем эхос помошью функции talk_to_me.
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
